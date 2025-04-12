@@ -258,6 +258,7 @@ h2.bd::after {
   position: relative;
   padding-bottom: 11%;
   width: 100%;
+  overflow: hidden;
 }
 .main_a > div {
  width: 70%;
@@ -333,7 +334,6 @@ h2.bd::after {
     -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.16);
     -o-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.16);
     -ms-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.16);
-    overflow: hidden;
   }
 
   .mw315 {
