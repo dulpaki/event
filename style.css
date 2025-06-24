@@ -108,7 +108,9 @@ h2.bd::after {
   top: 70%;
   background-color: #F739A6;
 }
-
+.mt0 {
+  margin-top: 0;
+}
 .mb10 {
   margin-bottom: 10px;
 }
