@@ -30,6 +30,7 @@
 </head>
 
 <body id="main" class="animated fadein on">
+  <div id="protected-content" style="display:none;">
   <div class="wrapper">
     <div class="layoutRole">
       <div class="layoutRole_contents">
@@ -223,8 +224,7 @@
   </div>
 
   <div class="logo"><img class="" src="logo.png" alt=""></div>
-  </div>
-  </div>
+</div>
   <!-- layoutRole -->
   <script type="text/javascript" src="jquery.min.js"></script>
   <script>
@@ -369,6 +369,36 @@ var tabMenu = function() {
 tabMenu();
 });
   </script>
+
+<script>
+  (function() {
+    const correctPassword = "matsumoto";
+    const content = document.getElementById('protected-content');
+    const authKey = 'passwordAuthenticated';
+    // 1. 既に認証済みかチェック
+    if (localStorage.getItem(authKey) === 'true') {
+        content.style.display = 'block';
+        return;
+    }
+    // 2. パスワードを要求
+    const inputPassword = prompt("パスワードを入力してください:");
+    // 3. パスワードを検証
+    if (inputPassword === correctPassword) {
+        // 認証成功
+        alert("認証に成功しました。");
+        content.style.display = 'block';
+        // 認証済みフラグをlocalStorageに保存
+        localStorage.setItem(authKey, 'true');
+    } else {
+        // 認証失敗
+        alert("パスワードが違います。");
+        // コンテンツを空にするか、エラーメッセージを表示
+        document.body.innerHTML = '<p style="text-align: center; color: red; font-weight: bold;">
+      認証に失敗しました。ページを閲覧できません。</p>';
+    }
+})();
+</script>
+
 </body>
 
 </html>
