@@ -17,6 +17,16 @@
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link href="style.css" rel="stylesheet" type="text/css" />
   <!-- <script type="text/javascript" src="//typesquare.com/3/tsst/script/ja/typesquare.js?67da589160944d64808857fbac1e02e5" charset="utf-8"></script> -->
+  <script>
+  (function() {
+    const correctPassword = 'matsumoto';
+    const enteredPassword = prompt('パスワードを入力してください:');
+    if (enteredPassword !== correctPassword) {
+      document.body.innerHTML = '<h1 style="text-align: center; margin-top: 50px;">パスワードが違います。</h1>';
+      document.title = 'アクセスが拒否されました';
+    }
+  })();
+  </script>
 </head>
 
 <body id="main" class="animated fadein on">
