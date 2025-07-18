@@ -35,13 +35,19 @@ img {
 a {
   color: #fff;
 }
-p {
+p , dd , dt {
   font-family: "M PLUS 1p", sans-serif;
   font-weight: 500;
   font-style: normal;
   font-size: 13px;
   line-height: 1.8;
   color: #fff;
+}
+dd  {
+  font-size: 14px;
+}
+dt  {
+  font-size: 15px;
 }
 .newspost p {
   color: #535355;
@@ -224,7 +230,9 @@ h2.bd::after {
 .newsindex .layoutRole_contents , .newspost .layoutRole_contents {
   padding: 100px 0 0 0;
 }
-
+.newsindex .l-sectionPrimary--bgSecondary {
+  padding-bottom: 40px;
+}
 /* main */
 .layoutRole_contents {
   background-color: #100C53;

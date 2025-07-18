@@ -146,7 +146,7 @@ export const getNewsList = (path, limit) => {
           // 表示件数以上の投稿がある場合は「もっと見る」ボタンを表示
           const moreButton = `
             <div class="u-text-left u-mt-sp-48 u-mt-tab-40">
-              <a class="c-button" href="${path}">全てみる</a>
+              <p><a class="c-button" href="${path}">全てみる</a></p>
             </div>
           `;
 
