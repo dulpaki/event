@@ -51,6 +51,26 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString('ja-JP');
 }
 
+// HTML内のパスをリポジトリのルートからの絶対パスに書き換える関数
+function rewritePaths(htmlContent, currentFilePath) {
+  // currentFilePathは、例えば 'index.html' や 'news/index.html' など
+  const currentDir = path.dirname(currentFilePath);
+
+  return htmlContent.replace(/(href|src)="([^"]*)"/g, (match, attr, originalPath) => {
+    // 外部URLや絶対パス（http/httpsで始まるもの、またはルートからの絶対パス）は変更しない
+    if (originalPath.startsWith('http') || originalPath.startsWith('/')) {
+      return `${attr}="${originalPath}"`;
+    }
+
+    // 相対パスを解決
+    const resolvedPath = path.resolve(currentDir, originalPath);
+    // リポジトリのルートからの相対パスに変換
+    const finalPath = `/${REPO_NAME}/${path.relative(__dirname, resolvedPath)}`;
+
+    return `${attr}="${finalPath}"`;
+  });
+}
+
 // メインのビルド関数
 async function buildSite() {
   try {
@@ -63,8 +83,6 @@ async function buildSite() {
     // --- 2. トップページ (index.html) の生成 ---
     console.log('\nBuilding: /index.html');
     let topTemplate = readTemplate('index.html');
-    // <base>タグを挿入
-    topTemplate = topTemplate.replace('<head>', `<head>\n  <base href="/${REPO_NAME}/">`);
     const topNewsHtml = allNews.slice(0, 3).map(item => `
       <li class="c-newsList__item">
         <a class="c-newsList__contents" href="./news/${item.id}.html">
@@ -88,12 +106,10 @@ async function buildSite() {
     `;
     topTemplate = topTemplate.replace('<div id="js-newsMoreButton"></div>', moreButtonHtml);
 
-    writeFile(path.join(distDir, 'index.html'), topTemplate);
+    writeFile(path.join(distDir, 'index.html'), rewritePaths(topTemplate, 'index.html'));
 
     console.log('\nBuilding: /news/index.html');
     let newsListTemplate = readTemplate('news/index.html');
-    // <base>タグを挿入
-    newsListTemplate = newsListTemplate.replace('<head>', `<head>\n  <base href="/${REPO_NAME}/">`);
     const allNewsHtml = allNews.map(item => `
       <li class="c-newsList__item">
         <a class="c-newsList__contents" href="./${item.id}.html">
@@ -108,38 +124,22 @@ async function buildSite() {
       </li>
     `).join('');
     newsListTemplate = newsListTemplate.replace('<div id="js-getNewsList"></div>', `<ol class="c-newsList">${allNewsHtml}</ol>`);
-    writeFile(path.join(distDir, 'news', 'index.html'), newsListTemplate);
+    writeFile(path.join(distDir, 'news', 'index.html'), rewritePaths(newsListTemplate, 'news/index.html'));
 
     console.log('\nBuilding detail pages...');
     const postTemplate = readTemplate('news/post.html');
     for (const item of allNews) {
       console.log(`- Building: /news/${item.id}.html`);
       let singlePostHtml = postTemplate;
-      // <base>タグを挿入
-      singlePostHtml = singlePostHtml.replace('<head>', `<head>\n  <base href="/${REPO_NAME}/">`);
       singlePostHtml = singlePostHtml.replace('<h1 class="p-columnPostTitle" id="js-postTitle"></h1>', `<h1 class="p-columnPostTitle">${item.title}</h1>`);
       singlePostHtml = singlePostHtml.replace('<div id="js-postCategory"></div>', item.category ? `<p class="c-label">${item.category}</p>` : '');
       singlePostHtml = singlePostHtml.replace('<span id="js-publishedDate"></span>', formatDate(item.publishedAt || item.createdAt));
       singlePostHtml = singlePostHtml.replace('<time datetime="" id="js-updatedDate"></time>', `<time datetime="${item.updatedAt}">${formatDate(item.updatedAt)}</time>`);
       singlePostHtml = singlePostHtml.replace('<div id="js-postThumbnail"></div>', item.thumbnail ? `<img src="${item.thumbnail.url}" alt="" class="p-columnPostThumbnail">` : '');
       singlePostHtml = singlePostHtml.replace('<div id="js-post"></div>', `<div class="c-post">${item.body || ''}</div>`);
-      // お知らせ一覧へのリンクを修正 (baseタグで解決されるため、相対パスに戻す)
-      singlePostHtml = singlePostHtml.replace('href="../news/"', 'href="./index.html"');
-      writeFile(path.join(distDir, 'news', `${item.id}.html`), singlePostHtml);
+      singlePostHtml = singlePostHtml.replace('href="../news/"', 'href="./index.html"'); // この行はrewritePathsで処理されるため、実質不要になるが残しておく
+      writeFile(path.join(distDir, 'news', `${item.id}.html`), rewritePaths(singlePostHtml, `news/${item.id}.html`));
     }
-
-    // ★ 修正点: ナビゲーションリンクのパスを修正
-    const fixNavLinks = (htmlContent) => {
-      let fixedHtml = htmlContent;
-      fixedHtml = fixedHtml.replace(/href="\/event\/"/g, `href="/${REPO_NAME}/"`);
-      fixedHtml = fixedHtml.replace(/href="\/event\/news\/"/g, `href="/${REPO_NAME}/news/"`);
-      return fixedHtml;
-    };
-
-    // 生成されたHTMLにナビゲーションリンクの修正を適用
-    topTemplate = fixNavLinks(topTemplate);
-    newsListTemplate = fixNavLinks(newsListTemplate);
-    // postTemplateはループ内で処理されるので、ここでは不要
 
     console.log('\nCopying static assets...');
     const staticDirs = ['assets', 'img'];
