@@ -6,17 +6,18 @@ console.log('Starting build process...');
 
 const SERVICE_ID = 'vqgzv200km';
 const API_KEY = process.env.MICROCMS_API_KEY;
-const REPO_NAME = 'event';
 const distDir = path.join(__dirname, 'dist');
 
 // microCMSから全お知らせを取得
 async function getAllNews() {
   console.log('Fetching all news from microCMS...');
-  const response = await fetch(`https://${SERVICE_ID}.microcms.io/api/v1/news?limit=1000`, {
+  // ★ 修正点: シンプルなエンドポイントに変更
+  const response = await fetch(`https://${SERVICE_ID}.microcms.io/api/v1/news`, {
     headers: { 'X-MICROCMS-API-KEY': API_KEY },
   });
   if (!response.ok) {
-    throw new Error(`Failed to fetch news: ${response.statusText}`);
+    const errorBody = await response.text();
+    throw new Error(`Failed to fetch news: ${response.statusText} - ${errorBody}`);
   }
   const data = await response.json();
   console.log(`Fetched ${data.contents.length} news items.`);
@@ -50,13 +51,6 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString('ja-JP');
 }
 
-// パスを修正するヘルパー関数
-function fixPath(htmlContent) {
-    // この関数は現在未使用ですが、将来的なパスの問題のために残しておきます。
-    // return htmlContent.replace(/(href|src)="(\.\/|\.\.\/)/g, `$1="/${REPO_NAME}/$2`);
-    return htmlContent;
-}
-
 // メインのビルド関数
 async function buildSite() {
   try {
@@ -82,7 +76,7 @@ async function buildSite() {
       </li>
     `).join('');
     topTemplate = topTemplate.replace('<div id="js-getNewsList"></div>', `<ol class="c-newsList">${topNewsHtml}</ol>`);
-    writeFile(path.join(distDir, 'index.html'), fixPath(topTemplate));
+    writeFile(path.join(distDir, 'index.html'), topTemplate);
 
     console.log('\nBuilding: /news/index.html');
     let newsListTemplate = readTemplate('news/index.html');
@@ -100,7 +94,7 @@ async function buildSite() {
       </li>
     `).join('');
     newsListTemplate = newsListTemplate.replace('<div id="js-getNewsList"></div>', `<ol class="c-newsList">${allNewsHtml}</ol>`);
-    writeFile(path.join(distDir, 'news', 'index.html'), fixPath(newsListTemplate));
+    writeFile(path.join(distDir, 'news', 'index.html'), newsListTemplate);
 
     console.log('\nBuilding detail pages...');
     const postTemplate = readTemplate('news/post.html');
@@ -113,7 +107,9 @@ async function buildSite() {
       singlePostHtml = singlePostHtml.replace('<time datetime="" id="js-updatedDate"></time>', `<time datetime="${item.updatedAt}">${formatDate(item.updatedAt)}</time>`);
       singlePostHtml = singlePostHtml.replace('<div id="js-postThumbnail"></div>', item.thumbnail ? `<img src="${item.thumbnail.url}" alt="" class="p-columnPostThumbnail">` : '');
       singlePostHtml = singlePostHtml.replace('<div id="js-post"></div>', `<div class="c-post">${item.body || ''}</div>`);
-      writeFile(path.join(distDir, 'news', `${item.id}.html`), fixPath(singlePostHtml));
+      // ★ 修正点: お知らせ一覧へのリンクを修正
+      singlePostHtml = singlePostHtml.replace('href="../news/"', 'href="./index.html"');
+      writeFile(path.join(distDir, 'news', `${item.id}.html`), singlePostHtml);
     }
 
     console.log('\nCopying static assets...');
