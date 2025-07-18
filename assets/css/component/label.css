@@ -3,7 +3,7 @@
   ラベル パーツ
 --------------------------------------------------------- */
 .c-label {
-  color: var(--color-text-light);
+  color: var(--color-text-light)!important;
   display: inline-block;
   line-height: 1;
   padding: 8px 16px;
