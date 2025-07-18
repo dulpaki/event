@@ -43,7 +43,12 @@ p {
   line-height: 1.8;
   color: #fff;
 }
-
+.newspost p {
+  color: #535355;
+}
+.newspost a {
+  color: #535355;
+}
 /* モリサワONにしたらON */
 p.mori {
 font-family: "翠流アトラス R", sans-serif;
@@ -90,6 +95,9 @@ span.marker {
   -webkit-text-underline-offset: -1em;
   -webkit-text-decoration-skip-ink: none;
 }
+:where(h1) {
+  margin: 0;
+}
 h2.bd {
   position: relative;
   overflow: hidden;
@@ -105,7 +113,7 @@ h2.bd::after {
   content: "";
   width: 100%;
   height: 1.5px;
-  top: 70%;
+  top: 30%;
   background-color: #F739A6;
 }
 .mt0 {
@@ -212,6 +220,9 @@ h2.bd::after {
 }
 .layoutRole_contents {
   padding-bottom: 50px;
+}
+.newsindex .layoutRole_contents , .newspost .layoutRole_contents {
+  padding: 100px 0 0 0;
 }
 
 /* main */
@@ -327,7 +338,7 @@ h2.bd::after {
   .layoutRole {
     margin: auto;
     position: relative;
-    padding: 0 calc(40% - 380px) 0 50%;
+    padding: 0px calc(40% - 380px) 0 50%;
   }
 
   .layoutRole_contents {
@@ -336,6 +347,7 @@ h2.bd::after {
     -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.16);
     -o-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.16);
     -ms-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.16);
+    min-height: 100vh;
   }
 
   .mw315 {
