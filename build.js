@@ -36,6 +36,7 @@ function writeFile(filePath, content) {
 
 // 日付をフォーマットするヘルパー関数
 function formatDate(dateString) {
+  if (!dateString) return '';
   return new Date(dateString).toLocaleDateString('ja-JP');
 }
 
@@ -89,7 +90,7 @@ async function buildSite() {
       console.log(`Building: /news/${item.id}.html`);
       let singlePostHtml = postTemplate;
       singlePostHtml = singlePostHtml.replace('<h1 class="p-columnPostTitle" id="js-postTitle"></h1>', `<h1 class="p-columnPostTitle">${item.title}</h1>`);
-      singlePostHtml = singlePostHtml.replace('<div id="js-postCategory"></div>', `<p class="c-label">${item.category}</p>`);
+      singlePostHtml = singlePostHtml.replace('<div id="js-postCategory"></div>', item.category ? `<p class="c-label">${item.category}</p>` : '');
       singlePostHtml = singlePostHtml.replace('<span id="js-publishedDate"></span>', formatDate(item.publishedAt || item.createdAt));
       singlePostHtml = singlePostHtml.replace('<time datetime="" id="js-updatedDate"></time>', `<time datetime="${item.updatedAt}">${formatDate(item.updatedAt)}</time>`);
       singlePostHtml = singlePostHtml.replace('<div id="js-postThumbnail"></div>', item.thumbnail ? `<img src="${item.thumbnail.url}" alt="" class="p-columnPostThumbnail">` : '');
@@ -99,15 +100,13 @@ async function buildSite() {
 
     // --- 5. 静的ファイルのコピー ---
     console.log('Copying static assets...');
-    const assetsDir = path.join(__dirname, 'assets');
-    const distAssetsDir = path.join(distDir, 'assets');
-    if (fs.existsSync(assetsDir)) {
-        fs.cpSync(assetsDir, distAssetsDir, { recursive: true });
-    }
-    const imgDir = path.join(__dirname, 'img');
-    const distImgDir = path.join(distDir, 'img');
-    if (fs.existsSync(imgDir)) {
-        fs.cpSync(imgDir, distImgDir, { recursive: true });
+    const staticDirs = ['assets', 'img'];
+    for (const dir of staticDirs) {
+        const srcDir = path.join(__dirname, dir);
+        const destDir = path.join(distDir, dir);
+        if (fs.existsSync(srcDir)) {
+            fs.cpSync(srcDir, destDir, { recursive: true });
+        }
     }
 
     console.log('✨ Build successful! All files are in /dist directory.');
