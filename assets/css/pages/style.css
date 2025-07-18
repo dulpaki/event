@@ -241,7 +241,9 @@ h2.bd::after {
 .layoutRole_contents {
   background-color: #100C53;
 }
-
+.newsindex .layoutRole_contents , .newspost .layoutRole_contents {
+  background-color: #515060;
+}
 /* top */
 .mainImg > .inner {
   margin-top: -27%;
