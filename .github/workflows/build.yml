@@ -5,6 +5,7 @@ on:
     branches:
       - main
   workflow_dispatch:
+  repository_dispatch: # ★この行を追加
 
 jobs:
   build-and-deploy:
