@@ -4,6 +4,7 @@ const path = require('path');
 
 const SERVICE_ID = 'vqgzv200km';
 const API_KEY = process.env.MICROCMS_API_KEY;
+const REPO_NAME = 'event'; // ★リポジトリ名を設定
 const distDir = path.join(__dirname, 'dist');
 
 // microCMSから全お知らせを取得
@@ -40,18 +41,22 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString('ja-JP');
 }
 
+// パスを修正するヘルパー関数
+function fixPath(htmlContent) {
+    return htmlContent.replace(/(href|src)="(\.\/|\.\.\/)/g, `$1="/${REPO_NAME}/$2`);
+}
+
 // メインのビルド関数
 async function buildSite() {
   try {
-    // --- 1. 全お知らせデータを取得 ---
     const allNews = await getAllNews();
 
-    // --- 2. トップページ (index.html) の生成 ---
+    // --- トップページ (index.html) の生成 ---
     console.log('Building: /index.html');
     let topTemplate = readTemplate('index.html');
     const topNewsHtml = allNews.slice(0, 3).map(item => `
       <li class="c-newsList__item">
-        <a class="c-newsList__contents" href="./news/${item.id}.html">
+        <a class="c-newsList__contents" href="/${REPO_NAME}/news/${item.id}.html">
           <dl>
             <dt class="c-newsList__head">
               <time datetime="${item.updatedAt}">${formatDate(item.updatedAt)}</time>
@@ -63,14 +68,14 @@ async function buildSite() {
       </li>
     `).join('');
     topTemplate = topTemplate.replace('<div id="js-getNewsList"></div>', `<ol class="c-newsList">${topNewsHtml}</ol>`);
-    writeFile(path.join(distDir, 'index.html'), topTemplate);
+    writeFile(path.join(distDir, 'index.html'), fixPath(topTemplate));
 
-    // --- 3. お知らせ一覧ページ (news/index.html) の生成 ---
+    // --- お知らせ一覧ページ (news/index.html) の生成 ---
     console.log('Building: /news/index.html');
     let newsListTemplate = readTemplate('news/index.html');
     const allNewsHtml = allNews.map(item => `
       <li class="c-newsList__item">
-        <a class="c-newsList__contents" href="./${item.id}.html">
+        <a class="c-newsList__contents" href="/${REPO_NAME}/news/${item.id}.html">
           <dl>
             <dt class="c-newsList__head">
               <time datetime="${item.updatedAt}">${formatDate(item.updatedAt)}</time>
@@ -82,9 +87,9 @@ async function buildSite() {
       </li>
     `).join('');
     newsListTemplate = newsListTemplate.replace('<div id="js-getNewsList"></div>', `<ol class="c-newsList">${allNewsHtml}</ol>`);
-    writeFile(path.join(distDir, 'news', 'index.html'), newsListTemplate);
+    writeFile(path.join(distDir, 'news', 'index.html'), fixPath(newsListTemplate));
 
-    // --- 4. お知らせ詳細ページ (news/[id].html) の生成 ---
+    // --- お知らせ詳細ページ (news/[id].html) の生成 ---
     const postTemplate = readTemplate('news/post.html');
     for (const item of allNews) {
       console.log(`Building: /news/${item.id}.html`);
@@ -95,10 +100,10 @@ async function buildSite() {
       singlePostHtml = singlePostHtml.replace('<time datetime="" id="js-updatedDate"></time>', `<time datetime="${item.updatedAt}">${formatDate(item.updatedAt)}</time>`);
       singlePostHtml = singlePostHtml.replace('<div id="js-postThumbnail"></div>', item.thumbnail ? `<img src="${item.thumbnail.url}" alt="" class="p-columnPostThumbnail">` : '');
       singlePostHtml = singlePostHtml.replace('<div id="js-post"></div>', `<div class="c-post">${item.body || ''}</div>`);
-      writeFile(path.join(distDir, 'news', `${item.id}.html`), singlePostHtml);
+      writeFile(path.join(distDir, 'news', `${item.id}.html`), fixPath(singlePostHtml));
     }
 
-    // --- 5. 静的ファイルのコピー ---
+    // --- 静的ファイルのコピー ---
     console.log('Copying static assets...');
     const staticDirs = ['assets', 'img'];
     for (const dir of staticDirs) {
