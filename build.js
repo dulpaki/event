@@ -13,7 +13,7 @@ const distDir = path.join(__dirname, 'dist');
 async function getAllNews() {
   console.log('Fetching all news from microCMS...');
   const response = await fetch(`https://${SERVICE_ID}.microcms.io/api/v1/news`, {
-    headers: { 'X-MICROCMS-API-K`EY': API_KEY },
+    headers: { 'X-MICROCMS-API-KEY': API_KEY },
   });
   if (!response.ok) {
     const errorBody = await response.text();
@@ -62,7 +62,7 @@ async function buildSite() {
 
     console.log('\nBuilding: /index.html');
     let topTemplate = readTemplate('index.html');
-    // ★ <base>タグを挿入
+    // <base>タグを挿入
     topTemplate = topTemplate.replace('<head>', `<head>\n  <base href="/${REPO_NAME}/">`);
     const topNewsHtml = allNews.slice(0, 3).map(item => `
       <li class="c-newsList__item">
@@ -82,7 +82,7 @@ async function buildSite() {
 
     console.log('\nBuilding: /news/index.html');
     let newsListTemplate = readTemplate('news/index.html');
-    // ★ <base>タグを挿入
+    // <base>タグを挿入
     newsListTemplate = newsListTemplate.replace('<head>', `<head>\n  <base href="/${REPO_NAME}/">`);
     const allNewsHtml = allNews.map(item => `
       <li class="c-newsList__item">
@@ -105,7 +105,7 @@ async function buildSite() {
     for (const item of allNews) {
       console.log(`- Building: /news/${item.id}.html`);
       let singlePostHtml = postTemplate;
-      // ★ <base>タグを挿入
+      // <base>タグを挿入
       singlePostHtml = singlePostHtml.replace('<head>', `<head>\n  <base href="/${REPO_NAME}/">`);
       singlePostHtml = singlePostHtml.replace('<h1 class="p-columnPostTitle" id="js-postTitle"></h1>', `<h1 class="p-columnPostTitle">${item.title}</h1>`);
       singlePostHtml = singlePostHtml.replace('<div id="js-postCategory"></div>', item.category ? `<p class="c-label">${item.category}</p>` : '');
@@ -113,6 +113,7 @@ async function buildSite() {
       singlePostHtml = singlePostHtml.replace('<time datetime="" id="js-updatedDate"></time>', `<time datetime="${item.updatedAt}">${formatDate(item.updatedAt)}</time>`);
       singlePostHtml = singlePostHtml.replace('<div id="js-postThumbnail"></div>', item.thumbnail ? `<img src="${item.thumbnail.url}" alt="" class="p-columnPostThumbnail">` : '');
       singlePostHtml = singlePostHtml.replace('<div id="js-post"></div>', `<div class="c-post">${item.body || ''}</div>`);
+      // お知らせ一覧へのリンクを修正 (baseタグで解決されるため、相対パスに戻す)
       singlePostHtml = singlePostHtml.replace('href="../news/"', 'href="./index.html"');
       writeFile(path.join(distDir, 'news', `${item.id}.html`), singlePostHtml);
     }
