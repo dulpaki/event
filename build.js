@@ -60,6 +60,7 @@ async function buildSite() {
 
     const allNews = await getAllNews();
 
+    // --- 2. トップページ (index.html) の生成 ---
     console.log('\nBuilding: /index.html');
     let topTemplate = readTemplate('index.html');
     // <base>タグを挿入
@@ -78,6 +79,15 @@ async function buildSite() {
       </li>
     `).join('');
     topTemplate = topTemplate.replace('<div id="js-getNewsList"></div>', `<ol class="c-newsList">${topNewsHtml}</ol>`);
+    
+    // js-newsMoreButtonを生成
+    const moreButtonHtml = `
+      <div class="u-text-left u-mt-sp-48 u-mt-tab-40">
+        <p><a class="c-button" href="./news/">全てみる</a></p>
+      </div>
+    `;
+    topTemplate = topTemplate.replace('<div id="js-newsMoreButton"></div>', moreButtonHtml);
+
     writeFile(path.join(distDir, 'index.html'), topTemplate);
 
     console.log('\nBuilding: /news/index.html');
@@ -117,6 +127,19 @@ async function buildSite() {
       singlePostHtml = singlePostHtml.replace('href="../news/"', 'href="./index.html"');
       writeFile(path.join(distDir, 'news', `${item.id}.html`), singlePostHtml);
     }
+
+    // ★ 修正点: ナビゲーションリンクのパスを修正
+    const fixNavLinks = (htmlContent) => {
+      let fixedHtml = htmlContent;
+      fixedHtml = fixedHtml.replace(/href="\/event\/"/g, `href="/${REPO_NAME}/"`);
+      fixedHtml = fixedHtml.replace(/href="\/event\/news\/"/g, `href="/${REPO_NAME}/news/"`);
+      return fixedHtml;
+    };
+
+    // 生成されたHTMLにナビゲーションリンクの修正を適用
+    topTemplate = fixNavLinks(topTemplate);
+    newsListTemplate = fixNavLinks(newsListTemplate);
+    // postTemplateはループ内で処理されるので、ここでは不要
 
     console.log('\nCopying static assets...');
     const staticDirs = ['assets', 'img'];
