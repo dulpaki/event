@@ -6,6 +6,7 @@ console.log('Starting build process...');
 
 const SERVICE_ID = 'vqgzv200km';
 const API_KEY = process.env.MICROCMS_API_KEY;
+const REPO_NAME = 'event'; // GitHubリポジトリ名
 const distDir = path.join(__dirname, 'dist');
 
 // microCMSから全お知らせを取得
@@ -60,8 +61,13 @@ async function buildSite() {
 
     const allNews = await getAllNews();
 
-    console.log('\nBuilding: /index.html');
+    // --- 2. トップページ (index.html) の生成 ---
+    console.log('
+Building: /index.html');
     let topTemplate = readTemplate('index.html');
+    // ★ <base>タグを挿入
+    topTemplate = topTemplate.replace('<head>', `<head>
+  <base href="/${REPO_NAME}/">`);
     const topNewsHtml = allNews.slice(0, 3).map(item => `
       <li class="c-newsList__item">
         <a class="c-newsList__contents" href="./news/${item.id}.html">
@@ -78,8 +84,13 @@ async function buildSite() {
     topTemplate = topTemplate.replace('<div id="js-getNewsList"></div>', `<ol class="c-newsList">${topNewsHtml}</ol>`);
     writeFile(path.join(distDir, 'index.html'), topTemplate);
 
-    console.log('\nBuilding: /news/index.html');
+    // --- 3. お知らせ一覧ページ (news/index.html) の生成 ---
+    console.log('
+Building: /news/index.html');
     let newsListTemplate = readTemplate('news/index.html');
+    // ★ <base>タグを挿入
+    newsListTemplate = newsListTemplate.replace('<head>', `<head>
+  <base href="/${REPO_NAME}/">`);
     const allNewsHtml = allNews.map(item => `
       <li class="c-newsList__item">
         <a class="c-newsList__contents" href="./${item.id}.html">
@@ -96,23 +107,31 @@ async function buildSite() {
     newsListTemplate = newsListTemplate.replace('<div id="js-getNewsList"></div>', `<ol class="c-newsList">${allNewsHtml}</ol>`);
     writeFile(path.join(distDir, 'news', 'index.html'), newsListTemplate);
 
-    console.log('\nBuilding detail pages...');
+    // --- 4. お知らせ詳細ページ (news/[id].html) の生成 ---
+    console.log('
+Building detail pages...');
     const postTemplate = readTemplate('news/post.html');
     for (const item of allNews) {
       console.log(`- Building: /news/${item.id}.html`);
       let singlePostHtml = postTemplate;
+      // ★ <base>タグを挿入
+      singlePostHtml = singlePostHtml.replace('<head>', `<head>
+  <base href="/${REPO_NAME}/">`);
       singlePostHtml = singlePostHtml.replace('<h1 class="p-columnPostTitle" id="js-postTitle"></h1>', `<h1 class="p-columnPostTitle">${item.title}</h1>`);
       singlePostHtml = singlePostHtml.replace('<div id="js-postCategory"></div>', item.category ? `<p class="c-label">${item.category}</p>` : '');
       singlePostHtml = singlePostHtml.replace('<span id="js-publishedDate"></span>', formatDate(item.publishedAt || item.createdAt));
       singlePostHtml = singlePostHtml.replace('<time datetime="" id="js-updatedDate"></time>', `<time datetime="${item.updatedAt}">${formatDate(item.updatedAt)}</time>`);
       singlePostHtml = singlePostHtml.replace('<div id="js-postThumbnail"></div>', item.thumbnail ? `<img src="${item.thumbnail.url}" alt="" class="p-columnPostThumbnail">` : '');
       singlePostHtml = singlePostHtml.replace('<div id="js-post"></div>', `<div class="c-post">${item.body || ''}</div>`);
-      // ★ 修正点: お知らせ一覧へのリンクを修正
+      // ★ 修正点: お知らせ一覧へのリンクを修正 (baseタグで解決されるため、相対パスに戻す)
       singlePostHtml = singlePostHtml.replace('href="../news/"', 'href="./index.html"');
+      // ★ 修正点: common.jsへのパスを修正
+      singlePostHtml = singlePostHtml.replace('src="../assets/js/common.js"', 'src="../../assets/js/common.js"');
       writeFile(path.join(distDir, 'news', `${item.id}.html`), singlePostHtml);
     }
 
-    console.log('\nCopying static assets...');
+    console.log('
+Copying static assets...');
     const staticDirs = ['assets', 'img'];
     for (const dir of staticDirs) {
         const srcDir = path.join(__dirname, dir);
@@ -124,10 +143,12 @@ async function buildSite() {
         }
     }
 
-    console.log('\n✨ Build successful! All files are in /dist directory.');
+    console.log('
+✨ Build successful! All files are in /dist directory.');
 
   } catch (error) {
-    console.error('\n🚨 Build failed:', error);
+    console.error('
+🚨 Build failed:', error);
     process.exit(1);
   }
 }
