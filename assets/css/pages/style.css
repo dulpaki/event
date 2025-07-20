@@ -395,6 +395,7 @@ p.thin {
   display: flex;
   padding: 0 20px;
   align-items: center;
+  justify-content: space-evenly
 }
 .vsname h3:nth-of-type(1) {
   width: 37%;
