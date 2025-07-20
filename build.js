@@ -50,27 +50,6 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString('ja-JP');
 }
 
-// HTML内のパスをルートからの絶対パスに書き換える関数
-function rewritePaths(htmlContent, currentHtmlPath) {
-  // currentHtmlPath は、例えば 'index.html' や 'news/index.html'
-  const currentDir = path.dirname(currentHtmlPath);
-
-  return htmlContent.replace(/(href|src)="([^"]*)"/g, (match, attr, originalPath) => {
-    // 外部URLやルートからの絶対パス（http/httpsで始まるもの、または / で始まるもの）は変更しない
-    if (originalPath.startsWith('http') || originalPath.startsWith('/')) {
-      return `${attr}="${originalPath}"`;
-    }
-
-    // 相対パスをルートからの絶対パスに変換
-    // 例: index.html から見た ./assets/css/style.css -> /assets/css/style.css
-    // 例: news/index.html から見た ../assets/css/style.css -> /assets/css/style.css
-    const resolvedPath = path.resolve(currentDir, originalPath); // 相対パスを解決
-    const finalPath = `/${path.relative(__dirname, resolvedPath).replace(/\\/g, '/')}`; // ルートからの相対パスに変換し、Windowsパス区切りを修正
-
-    return `${attr}="${finalPath}"`;
-  });
-}
-
 // メインのビルド関数
 async function buildSite() {
   try {
@@ -106,7 +85,7 @@ async function buildSite() {
     `;
     topTemplate = topTemplate.replace('<div id="js-newsMoreButton"></div>', moreButtonHtml);
 
-    writeFile(path.join(distDir, 'index.html'), rewritePaths(topTemplate, 'index.html'));
+    writeFile(path.join(distDir, 'index.html'), topTemplate);
 
     console.log('\nBuilding: /news/index.html');
     let newsListTemplate = readTemplate('news/index.html');
@@ -124,7 +103,7 @@ async function buildSite() {
       </li>
     `).join('');
     newsListTemplate = newsListTemplate.replace('<div id="js-getNewsList"></div>', `<ol class="c-newsList">${allNewsHtml}</ol>`);
-    writeFile(path.join(distDir, 'news', 'index.html'), rewritePaths(newsListTemplate, 'news/index.html'));
+    writeFile(path.join(distDir, 'news', 'index.html'), newsListTemplate);
 
     console.log('\nBuilding detail pages...');
     const postTemplate = readTemplate('news/post.html');
@@ -135,10 +114,25 @@ async function buildSite() {
       singlePostHtml = singlePostHtml.replace('<div id="js-postCategory"></div>', item.category ? `<p class="c-label">${item.category}</p>` : '');
       singlePostHtml = singlePostHtml.replace('<span id="js-publishedDate"></span>', formatDate(item.publishedAt || item.createdAt));
       singlePostHtml = singlePostHtml.replace('<time datetime="" id="js-updatedDate"></time>', `<time datetime="${item.updatedAt}">${formatDate(item.updatedAt)}</time>`);
+      // p-columnThumbnailクラスを持つdivで画像を囲む
       singlePostHtml = singlePostHtml.replace('<div id="js-postThumbnail"></div>', item.thumbnail ? `<div class="p-columnPostThumbnail"><img src="${item.thumbnail.url}" alt=""></div>` : '');
-      singlePostHtml = singlePostHtml.replace('<div id="js-post"></div>', `<div class="c-post">${item.body || ''}</div>`);
+      
+      // microCMSのリッチエディタの内容にクラスを付与
+      let richEditorContent = item.body || '';
+      richEditorContent = richEditorContent.replace(/<h1/g, '<h1 class="c-post__heading1"');
+      richEditorContent = richEditorContent.replace(/<h2/g, '<h2 class="c-post__heading2"');
+      richEditorContent = richEditorContent.replace(/<h3/g, '<h3 class="c-post__heading3"');
+      richEditorContent = richEditorContent.replace(/<p/g, '<p class="c-post__paragraph"');
+      richEditorContent = richEditorContent.replace(/<ul/g, '<ul class="c-post__ul"');
+      richEditorContent = richEditorContent.replace(/<ol/g, '<ol class="c-post__ol"');
+      richEditorContent = richEditorContent.replace(/<li/g, '<li class="c-post__li"');
+      richEditorContent = richEditorContent.replace(/<a/g, '<a class="c-post__link"');
+      richEditorContent = richEditorContent.replace(/<img/g, '<img class="c-post__image"');
+      richEditorContent = richEditorContent.replace(/<iframe/g, '<iframe class="c-post__iframe"');
+
+      singlePostHtml = singlePostHtml.replace('<div id="js-post"></div>', `<div class="c-post">${richEditorContent}</div>`);
       singlePostHtml = singlePostHtml.replace('href="../news/"', 'href="./index.html"');
-      writeFile(path.join(distDir, 'news', `${item.id}.html`), rewritePaths(singlePostHtml, `news/${item.id}.html`));
+      writeFile(path.join(distDir, 'news', `${item.id}.html`), singlePostHtml);
     }
 
     console.log('\nCopying static assets...');
