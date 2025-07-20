@@ -50,6 +50,27 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString('ja-JP');
 }
 
+// HTML内のパスをルートからの絶対パスに書き換える関数
+function rewritePaths(htmlContent, currentHtmlPath) {
+  // currentHtmlPath は、例えば 'index.html' や 'news/index.html'
+  const currentDir = path.dirname(currentHtmlPath);
+
+  return htmlContent.replace(/(href|src)="([^"]*)"/g, (match, attr, originalPath) => {
+    // 外部URLやルートからの絶対パス（http/httpsで始まるもの、または / で始まるもの）は変更しない
+    if (originalPath.startsWith('http') || originalPath.startsWith('/')) {
+      return `${attr}="${originalPath}"`;
+    }
+
+    // 相対パスをルートからの絶対パスに変換
+    // 例: index.html から見た ./assets/css/style.css -> /assets/css/style.css
+    // 例: news/index.html から見た ../assets/css/style.css -> /assets/css/style.css
+    const resolvedPath = path.resolve(currentDir, originalPath); // 相対パスを解決
+    const finalPath = `/${path.relative(__dirname, resolvedPath).replace(/\\/g, '/')}`; // ルートからの相対パスに変換し、Windowsパス区切りを修正
+
+    return `${attr}="${finalPath}"`;
+  });
+}
+
 // メインのビルド関数
 async function buildSite() {
   try {
@@ -85,7 +106,7 @@ async function buildSite() {
     `;
     topTemplate = topTemplate.replace('<div id="js-newsMoreButton"></div>', moreButtonHtml);
 
-    writeFile(path.join(distDir, 'index.html'), topTemplate);
+    writeFile(path.join(distDir, 'index.html'), rewritePaths(topTemplate, 'index.html'));
 
     console.log('\nBuilding: /news/index.html');
     let newsListTemplate = readTemplate('news/index.html');
@@ -103,7 +124,7 @@ async function buildSite() {
       </li>
     `).join('');
     newsListTemplate = newsListTemplate.replace('<div id="js-getNewsList"></div>', `<ol class="c-newsList">${allNewsHtml}</ol>`);
-    writeFile(path.join(distDir, 'news', 'index.html'), newsListTemplate);
+    writeFile(path.join(distDir, 'news', 'index.html'), rewritePaths(newsListTemplate, 'news/index.html'));
 
     console.log('\nBuilding detail pages...');
     const postTemplate = readTemplate('news/post.html');
@@ -117,7 +138,7 @@ async function buildSite() {
       singlePostHtml = singlePostHtml.replace('<div id="js-postThumbnail"></div>', item.thumbnail ? `<img src="${item.thumbnail.url}" alt="" class="p-columnPostThumbnail">` : '');
       singlePostHtml = singlePostHtml.replace('<div id="js-post"></div>', `<div class="c-post">${item.body || ''}</div>`);
       singlePostHtml = singlePostHtml.replace('href="../news/"', 'href="./index.html"');
-      writeFile(path.join(distDir, 'news', `${item.id}.html`), singlePostHtml);
+      writeFile(path.join(distDir, 'news', `${item.id}.html`), rewritePaths(singlePostHtml, `news/${item.id}.html`));
     }
 
     console.log('\nCopying static assets...');
