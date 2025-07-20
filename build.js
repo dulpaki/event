@@ -110,16 +110,12 @@ async function buildSite() {
     for (const item of allNews) {
       console.log(`- Building: /news/${item.id}.html`);
       let singlePostHtml = postTemplate;
-      // ★ 修正点: <article>タグにはクラスを付与しない
-      // singlePostHtml = singlePostHtml.replace('<article>', '<article class="p-columnPost">'); // この行を削除
       singlePostHtml = singlePostHtml.replace('<h1 class="p-columnPostTitle" id="js-postTitle"></h1>', `<h1 class="p-columnPostTitle">${item.title}</h1>`);
       singlePostHtml = singlePostHtml.replace('<div id="js-postCategory"></div>', item.category ? `<p class="c-label">${item.category}</p>` : '');
       singlePostHtml = singlePostHtml.replace('<span id="js-publishedDate"></span>', formatDate(item.publishedAt || item.createdAt));
       singlePostHtml = singlePostHtml.replace('<time datetime="" id="js-updatedDate"></time>', `<time datetime="${item.updatedAt}">${formatDate(item.updatedAt)}</time>`);
-      // p-columnThumbnailクラスを持つdivで画像を囲む
       singlePostHtml = singlePostHtml.replace('<div id="js-postThumbnail"></div>', item.thumbnail ? `<div class="p-columnPostThumbnail"><img src="${item.thumbnail.url}" alt=""></div>` : '');
       
-      // ★ 修正点: id="js-post"のプレースホルダーを、<div class="c-postEditor">で囲まれたitem.bodyに置き換える
       singlePostHtml = singlePostHtml.replace('<div id="js-post"></div>', `<div id="js-post"><div class="c-postEditor">${item.body || ''}</div></div>`);
 
       singlePostHtml = singlePostHtml.replace('href="../news/"', 'href="./index.html"');
