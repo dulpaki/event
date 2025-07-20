@@ -119,13 +119,9 @@ async function buildSite() {
       // p-columnThumbnailクラスを持つdivで画像を囲む
       singlePostHtml = singlePostHtml.replace('<div id="js-postThumbnail"></div>', item.thumbnail ? `<div class="p-columnPostThumbnail"><img src="${item.thumbnail.url}" alt=""></div>` : '');
       
-      // microCMSのリッチエディタの内容にクラスを付与
-      let richEditorContent = item.body || '';
-      // ここはリッチエディタのスタイルを効かせたい場合は、microCMSが生成するHTMLタグに直接スタイルを当てるか、
-      // microCMSが生成するクラス名があればそれをターゲットにするのが良いでしょう。
-      // 現状は純粋なHTMLタグとして挿入されます。
+      // microCMSのリッチエディタの内容を挿入するdivにc-postEditorクラスを付与
+      singlePostHtml = singlePostHtml.replace('<div id="js-post"></div>', `<div id="js-post"><div class="c-postEditor">${item.body || ''}</div></div>`);
 
-      singlePostHtml = singlePostHtml.replace('<div id="js-post"></div>', `<div class="c-post">${richEditorContent}</div>`);
       singlePostHtml = singlePostHtml.replace('href="../news/"', 'href="./index.html"');
       writeFile(path.join(distDir, 'news', `${item.id}.html`), singlePostHtml);
     }
