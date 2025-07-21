@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="365.449" height="82.5" viewBox="0 0 365.449 82.5">
-  <g id="グループ_18" data-name="グループ 18" transform="translate(-192.5 -4028)">
+<svg xmlns="http://www.w3.org/2000/svg" width="365.449" height="78.7" viewBox="0 0 365.449 78.7">
+  <g id="グループ_18" data-name="グループ 18" transform="translate(-192.5 -4031.8)">
     <path id="パス_12" data-name="パス 12" d="M813.949,2145.5H448.5v-3H813.949Z" transform="translate(-256 1965)" fill="#f739a6"/>
-    <text id="NEWS" transform="translate(254 4081)" fill="#f739a6" font-size="60" font-family="PSuiryuAtlasStdN-B, A P-OTF SuiryuAtlas StdN"><tspan x="0" y="0">NEWS</tspan></text>
+    <path id="パス_33" data-name="パス 33" d="M5.1,3.3h9.24V-39.54L38.64,3.3H52.8V-48.9H43.56V-6.06L19.26-48.9H5.1ZM63,3.3h45.6V-5.46H73.2v-13.2h31.62v-8.76H73.2V-40.14h35.4V-48.9H63Zm64.02,0h12.96l9.36-41.58,9.3,41.58H171.6l14.22-52.2h-10.5L165-7.32,155.52-48.9H143.16L133.62-7.32,123.3-48.9H112.8Zm74.4.3h24.3c7.8,0,12-4.2,12-12V-15c0-7.8-4.2-12-12-12h-20.7c-3.12,0-4.8-1.68-4.8-4.8v-3.84c0-3.12,1.68-4.8,4.8-4.8h16.5c3.12,0,4.8,1.68,4.8,4.8v3.12h10.2V-37.2c0-7.8-4.2-12-12-12h-22.5c-7.8,0-12,4.2-12,12v6.6c0,7.8,4.2,12,12,12h20.7c3.12,0,4.8,1.68,4.8,4.8v3.84c0,3.12-1.68,4.8-4.8,4.8h-18.3c-3.12,0-4.8-1.68-4.8-4.8v-3.12h-10.2V-8.4C189.42-.6,193.62,3.6,201.42,3.6Z" transform="translate(254 4081)" fill="#f739a6"/>
   </g>
 </svg>
