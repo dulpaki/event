@@ -216,7 +216,7 @@ h2.bd::after {
 }
 
 .mw250 {
-  max-width: calc(250px / 2);
+  max-width: calc(320px / 2);
 }
 
 .mw516 {
@@ -287,7 +287,13 @@ h2.bd::after {
 .newspost .layoutRole_contents {
   background-color: #515060;
 }
-
+.icon {
+  display: flex;
+    align-items: center;
+}
+.icon img {
+  padding-right: 5px;
+}
 /* top */
 .mainImg>.inner {
   margin-top: -27%;
