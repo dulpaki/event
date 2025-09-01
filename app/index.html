@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta name="viewport"
+        content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
+    <title>DULPAKI APP</title>
+    <meta name="description" content="1日だけの特別なイベントにあなたを招待します！">
+    <meta name="robots" content="noindex" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="/assets/css/foundation/theme.css" />
+    <link rel="stylesheet" href="/assets/css/foundation/base.css" />
+    <link rel="stylesheet" href="/assets/css/layout/wrapper.css" />
+    <link rel="stylesheet" href="/assets/css/layout/container.css" />
+    <link rel="stylesheet" href="/assets/css/layout/main.css" />
+    <link rel="stylesheet" href="/assets/css/layout/section.css" />
+    <link rel="stylesheet" href="/assets/css/layout/heading.css" />
+    <link rel="stylesheet" href="/assets/css/layout/header.css" />
+    <link rel="stylesheet" href="/assets/css/layout/footer.css" />
+    <link rel="stylesheet" href="/assets/css/component/card.css" />
+    <link rel="stylesheet" href="/assets/css/component/button.css" />
+    <link rel="stylesheet" href="/assets/css/component/step.css" />
+    <link rel="stylesheet" href="/assets/css/component/news.css" />
+    <link rel="stylesheet" href="/assets/css/component/column-list.css" />
+    <link rel="stylesheet" href="/assets/css/component/link-list.css" />
+    <link rel="stylesheet" href="/assets/css/utility/screen-reader-text.css" />
+    <link rel="stylesheet" href="/assets/css/utility/display.css" />
+    <link rel="stylesheet" href="/assets/css/utility/text-align.css" />
+    <link rel="stylesheet" href="/assets/css/utility/text-link.css" />
+    <link rel="stylesheet" href="/assets/css/utility/list.css" />
+    <link rel="stylesheet" href="/assets/css/utility/margin.css" />
+    <link rel="stylesheet" href="/assets/css/utility/font-size.css" />
+    <link rel="stylesheet" href="/assets/css/pages/top.css" />
+    <link rel="stylesheet" href="/assets/js/library/swiper@9.3.2/swiper-bundle.min.css" />
+    <!-- / CSS -->
+    <!-- js -->
+    <script src="/assets/js/library/jquery/jquery-3.7.0.min.js" defer></script>
+    <script src="/assets/js/library/swiper@9.3.2/swiper-bundle.min.js" defer></script>
+    <script type="module" src="/assets/js/common.js" defer></script>
+    <!-- / js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/kiso.css@latest/kiso.css">
+    <!--   <link href="reset.css" rel="stylesheet" type="text/css" /> -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="/assets/css/pages/style.css?0718" rel="stylesheet" type="text/css" />
+    <style>
+        h2 {
+            font-size: 1.5rem;
+            
+            margin-bottom: 20px;
+        }
+        .flexBox3 {
+display: flex;
+justify-content: space-between;
+        }
+        .flexBox3 .box {
+            width: calc((100% - 15px) /3);
+        }
+        .layoutRole_contents {
+                background-color: #fff;
+                padding: 40px 2rem;
+            }
+        @media screen and (min-width: 750px) {
+            .layoutRole {
+                padding: 40px 2rem;
+                max-width: 700px;
+            }
+        }
+    </style>
+</head>
+
+<body id="" class=" on">
+    <div id="protected-content" style="display:none;">
+        <div class="wrapper">
+            <div class="layoutRole">
+                <div class="layoutRole_contents">
+                    <div class="info mb70">
+                            <h2>サイト</h2>
+                            <div class="flexBox3  mb60">
+                                <div class="box">
+                                    <a href="https://dulpaki.netlify.app/" target="_blank"><img src="/img/app/site.png"
+                                            alt=""></a>
+                                </div>
+                                <div class="box">
+                                    <a href="https://biluce.net/admin" target="_blank"><img src="/img/app/biluce.png"
+                                            alt=""></a>
+                                </div>
+                            </div>
+                            <h2>クイズ</h2>
+                            <div class="flexBox3  mb60">
+                                <div class="box">
+                                    <a href="https://dulpakiquiz.netlify.app/" target="_blank"><img src="/img/app/q_kaitou.png"
+                                            alt=""></a>
+                                </div>
+                                <div class="box">
+                                    <a href="https://dulpakiquiz.netlify.app/moderator.html" target="_blank"><img src="/img/app/q_shikai.png"
+                                            alt=""></a>
+                                </div>
+                                <div class="box">
+                                    <a href="https://dulpakiquiz.netlify.app/ranking.html" target="_blank"><img src="/img/app/q_rank.png"
+                                            alt=""></a>
+                                </div>
+                            </div>
+                            <h2>受付</h2>
+                            <div class="flexBox3  mb60">
+                                <div class="box">
+                                    <a href="https://dpcheckin.netlify.app/" target="_blank"><img src="/img/app/uketsuke.png"
+                                            alt=""></a>
+                                </div>
+                            </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            const correctPassword = "matsumoto";
+            const content = document.getElementById('protected-content');
+            const authKey = 'passwordAuthenticated';
+            // 1. 既に認証済みかチェック
+            if (localStorage.getItem(authKey) === 'true') {
+                content.style.display = 'block';
+                return;
+            }
+
+            // 2. パスワードを要求
+            const inputPassword = prompt("パスワードを入力してください:");
+            // 3. パスワードを検証
+            if (inputPassword === correctPassword) {
+                // 認証成功
+                alert("認証に成功しました。");
+                content.style.display = 'block';
+                // 認証済みフラグをlocalStorageに保存
+                localStorage.setItem(authKey, 'true');
+            } else {
+                // 認証失敗
+                alert("パスワードが違います。");
+                // エラーメッセージを表示
+                document.body.innerHTML = '<p style="text-align: center; color: red; font-weight: bold; padding-top: 50px; font-size:20px;">認証に失敗しました。ページを閲覧できません。</p>';
+            }
+        })();
+    </script>
+</body>
+
+</html>

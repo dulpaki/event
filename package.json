@@ -1,7 +1,6 @@
 {
   "name": "event-site",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "build": "node build.js"
@@ -11,5 +10,14 @@
   "license": "ISC",
   "dependencies": {
     "node-fetch": "^2.6.7"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dulpaki/event.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dulpaki/event/issues"
+  },
+  "homepage": "https://github.com/dulpaki/event#readme",
+  "description": ""
 }
