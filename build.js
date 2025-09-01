@@ -123,7 +123,7 @@ async function buildSite() {
     }
 
     console.log('\nCopying static assets...');
-    const staticDirs = ['assets', 'img'];
+    const staticDirs = ['assets', 'img', 'menu'];
     for (const dir of staticDirs) {
         const srcDir = path.join(__dirname, dir);
         const destDir = path.join(distDir, dir);
