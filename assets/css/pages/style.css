@@ -795,3 +795,6 @@ animation
 .tab_main:nth-child(2).is_show {
   border: 2px solid #7fa2cd;
 }
+.tab_main .box {
+  margin-bottom: 20px;
+}
